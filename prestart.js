@@ -1,43 +1,52 @@
 ig.module('cc-staircase-effect-fix')
 	.requires(
-		'impact.base.physics'
+		'impact.feature.camera.camera'
 	)
 	.defines(() => {
-		ig.Physics.inject({
-			moveEntityXY(a, c, e, f, g)
+		ig.Camera.EntityTarget.inject(
+		{
+			_lastEntityPos: Vec2.create(),
+			_offset: Vec2.create(),
+
+			init(a, b)
 			{
-				var originalX = c.pos.x;
-				var originalY = c.pos.y;
-				var originalRound = Math.round;
-				Math.round = x => x;
-				var ret = this.parent(a, c, e, f, g);
-				Math.round = originalRound;
+				this.parent(a, b);
 
-				if (e.x != 0 || e.y != 0)
-				{
-					var x = c.pos.x;
-					var y = c.pos.y;
+				Vec2.assign(this._lastEntityPos, this.entity.coll.pos);
+				this._offset.x = 0;
+				this._offset.y = 0;
+			},
 
-					if (e.x != 0 && Math.abs(e.x) > Math.abs(e.y)) {
-						x = Math.round(c.pos.x);
-						y = Math.round(c.pos.y + (x - c.pos.x) * e.y / e.x);
-					}
-					else if (e.y != 0 && Math.abs(e.y) >= Math.abs(e.x)) {
-						y = Math.round(c.pos.y);
-						x = Math.round(c.pos.x + (y - c.pos.y) * e.x / e.y);
-					}
-					x = Math.round(x * 100) / 100;
-					y = Math.round(y * 100) / 100;
-					if (!g) {
-						c._collData.frameVel.x = x - originalX;
-						c._collData.frameVel.y = y - originalY;
-					}
+			getPos(a)
+			{
+				this.parent(a)
+	
+				var d = Vec2.create();
+				Vec2.assign(d, this.entity.coll.pos);
+				d.x = d.x - this._offset.x;
+				d.y = d.y - this._offset.y;
+				var ex = d.x - this._lastEntityPos.x;
+				var ey = d.y - this._lastEntityPos.y;
+				var x = d.x;
+				var y = d.y;
 
-					c.pos.x = x;
-					c.pos.y = y;
+				if (ex != 0 && Math.abs(ex) > Math.abs(ey)) {
+					x = Math.round(d.x);
+					y = Math.round(d.y + (x - d.x) * ey / ex);
+				}
+				else if (ey != 0 && Math.abs(ey) >= Math.abs(ex)) {
+					y = Math.round(d.y);
+					x = Math.round(d.x + (y - d.y) * ex / ey);
 				}
 
-				return ret;
+				this._lastEntityPos.x = x;
+				this._lastEntityPos.y = y;
+
+				this._offset.x += d.x - x;
+				this._offset.y += d.y - y; 
+
+				a.x = x + this.entity.coll.size.x / 2;
+				a.y = y + this.entity.coll.size.y / 2 - Constants.BALL_HEIGHT
 			}
 		});
-	})
+	});
