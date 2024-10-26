@@ -5,6 +5,64 @@ ig.module('cc-staircase-effect-fix')
 		'impact.base.system'
 	)
 	.defines(() => {
+		ig.Camera.inject(
+		{
+			_lastPos: Vec2.create(),
+			_cameraSmoothingFactor: 0.15,
+
+			init()
+			{
+				this.parent();
+
+				Vec2.assign(this._lastPos, 0, 0);
+			},
+
+			_getNewPos: function(a, b, c)
+			{
+				var d = false;
+				if (this.targets.length > 0) {
+					d = this.targets[this.targets.length - 1];
+
+					let olda = Vec2.create();
+					Vec2.assign(olda, a);
+
+					d.target.getPos(a);
+
+					if (c) {
+						c.x = a.x + Math.round(d._currentZoomOffset.x);
+						c.y = a.y + Math.round(d._currentZoomOffset.y)
+					}
+
+					a.x = a.x + Math.round(d._currentOffset.x);
+					a.y = a.y + Math.round(d._currentOffset.y);
+
+					d = d.keepZoomFocusAligned || false
+
+					// Smooth camera position
+					var dx = a.x - olda.x;
+					var dy = a.y - olda.y;
+
+					let smoothingFactor = this._cameraSmoothingFactor;
+
+					if (Math.sqrt(dx * dx + dy * dy) > 50)
+						smoothingFactor = 1.0;
+
+					a.x = olda.x + dx * smoothingFactor;
+					a.y = olda.y + dy * smoothingFactor;
+				}
+				if (b) {
+					b.x = a.x;
+					b.y = a.y
+				}
+				if (this._cameraInBounds) {
+					b = d ? 1 : ig.system.zoom;
+					a.x = a.x.limit(ig.system.width / 2 / b, ig.game.size.x - ig.system.width / 2 / b);
+					a.y = a.y.limit(ig.system.height / 2 / b, ig.game.size.y - ig.system.height / 2 / b)
+				}!d && c && Vec2.assign(c, a);
+				return a
+			}
+		});
+
 		ig.Camera.EntityTarget.inject(
 		{
 			_lastEntityPos: Vec2.create(),
@@ -31,6 +89,7 @@ ig.module('cc-staircase-effect-fix')
 				var x = d.x;
 				var y = d.y;
 
+				// Round entity position properly for diagonal movement
 				if (ex != 0 && Math.abs(ex) > Math.abs(ey)) {
 					x = Math.round(d.x);
 					y = Math.round(d.y + (x - d.x) * ey / ex);
@@ -43,22 +102,8 @@ ig.module('cc-staircase-effect-fix')
 				this._lastEntityPos.x = x;
 				this._lastEntityPos.y = y;
 
-				// a.x = x + this.entity.coll.size.x / 2;
-				// a.y = y + this.entity.coll.size.y / 2 - Constants.BALL_HEIGHT;
-
-				x += this.entity.coll.size.x / 2;
-				y += this.entity.coll.size.y / 2 - Constants.BALL_HEIGHT;
-
-				let dx = x - a.x;
-				let dy = y - a.y;
-
-				let smoothingFactor = this._cameraSmoothingFactor;
-
-				if (Math.sqrt(dx * dx + dy * dy) > 50)
-					smoothingFactor = 1.0;
-
-				a.x += dx * smoothingFactor;
-				a.y += dy * smoothingFactor;
+				a.x = x + this.entity.coll.size.x / 2;
+				a.y = y + this.entity.coll.size.y / 2 - Constants.BALL_HEIGHT;
 			}
 		});
 
