@@ -11,12 +11,12 @@ ig.module('cc-staircase-effect-fix')
 
 			_getNewPos: function(a, b, c)
 			{
+				let olda = Vec2.create();
+				Vec2.assign(olda, a);
+
 				var d = false;
 				if (this.targets.length > 0) {
 					d = this.targets[this.targets.length - 1];
-
-					let olda = Vec2.create();
-					Vec2.assign(olda, a);
 
 					d.target.getPos(a);
 
@@ -29,18 +29,6 @@ ig.module('cc-staircase-effect-fix')
 					a.y = a.y + Math.round(d._currentOffset.y);
 
 					d = d.keepZoomFocusAligned || false
-
-					// Smooth camera position
-					var dx = a.x - olda.x;
-					var dy = a.y - olda.y;
-
-					let smoothingFactor = this._cameraSmoothingFactor;
-
-					if (Math.sqrt(dx * dx + dy * dy) > 50)
-						smoothingFactor = 1.0;
-
-					a.x = olda.x + dx * smoothingFactor;
-					a.y = olda.y + dy * smoothingFactor;
 				}
 				if (b) {
 					b.x = a.x;
@@ -52,6 +40,19 @@ ig.module('cc-staircase-effect-fix')
 					a.y = a.y.limit(ig.system.height / 2 / b, ig.game.size.y - ig.system.height / 2 / b)
 				}
 				!d && c && Vec2.assign(c, a);
+
+				// Smooth camera position
+				var dx = a.x - olda.x;
+				var dy = a.y - olda.y;
+
+				let smoothingFactor = this._cameraSmoothingFactor;
+
+				if (Math.sqrt(dx * dx + dy * dy) > 50)
+					smoothingFactor = 1.0;
+
+				a.x = olda.x + dx * smoothingFactor;
+				a.y = olda.y + dy * smoothingFactor;
+
 				return a
 			}
 		});
