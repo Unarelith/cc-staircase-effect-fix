@@ -1,6 +1,8 @@
 ig.module('cc-staircase-effect-fix')
 	.requires(
-		'impact.feature.camera.camera'
+		'impact.feature.camera.camera',
+		'impact.base.timer',
+		'impact.base.system'
 	)
 	.defines(() => {
 		ig.Camera.EntityTarget.inject(
@@ -57,6 +59,23 @@ ig.module('cc-staircase-effect-fix')
 
 				a.x += dx * smoothingFactor;
 				a.y += dy * smoothingFactor;
+			}
+		});
+
+		var cc_t = 0;
+
+		ig.Timer.step = function()
+		{
+			var a = cc_t ? cc_t : (window.performance.now ? window.performance.now() : Date.now());
+			ig.Timer.time = ig.Timer.time + Math.min((a - ig.Timer._last) / 1E3, ig.Timer.maxStep) * ig.Timer.timeScale;
+			ig.Timer._last = a;
+		};
+
+		ig.System.inject({
+			run(t)
+			{
+				cc_t = t;
+				this.parent();
 			}
 		});
 	});
