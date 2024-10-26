@@ -50,7 +50,8 @@ ig.module('cc-staircase-effect-fix')
 					b = d ? 1 : ig.system.zoom;
 					a.x = a.x.limit(ig.system.width / 2 / b, ig.game.size.x - ig.system.width / 2 / b);
 					a.y = a.y.limit(ig.system.height / 2 / b, ig.game.size.y - ig.system.height / 2 / b)
-				}!d && c && Vec2.assign(c, a);
+				}
+				!d && c && Vec2.assign(c, a);
 				return a
 			}
 		});
@@ -90,6 +91,8 @@ ig.module('cc-staircase-effect-fix')
 					y = Math.round(d.y);
 					x = Math.round(d.x + (y - d.y) * ex / ey);
 				}
+
+				y -= this._currentZ;
 
 				this._lastEntityPos.x = x;
 				this._lastEntityPos.y = y;
