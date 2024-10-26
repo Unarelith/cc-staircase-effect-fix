@@ -7,15 +7,7 @@ ig.module('cc-staircase-effect-fix')
 	.defines(() => {
 		ig.Camera.inject(
 		{
-			_lastPos: Vec2.create(),
 			_cameraSmoothingFactor: 0.15,
-
-			init()
-			{
-				this.parent();
-
-				Vec2.assign(this._lastPos, 0, 0);
-			},
 
 			_getNewPos: function(a, b, c)
 			{
