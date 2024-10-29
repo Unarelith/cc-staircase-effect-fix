@@ -1,0 +1,12 @@
+{
+	"id": "cc-staircase-effect-fix",
+	"version": "1.0.0",
+	"title": "Staircase Effect Fix",
+	"description": "Fixes staircase effect when moving diagonally",
+	"repository": "https://github.com/Unarelith/cc-staircase-effect-fix",
+	"tags": ["QoL"],
+	"authors": [
+		"Unarelith"
+	],
+	"prestart": "prestart.js"
+}
