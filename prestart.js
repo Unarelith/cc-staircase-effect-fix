@@ -1,3 +1,76 @@
+const Opts = modmanager.registerAndGetModOptions(
+	{
+		modId: 'cc-staircase-effect-fix',
+		title: 'Staircase Effect Fix',
+	},
+	{
+		general: {
+			settings: {
+				title: 'General',
+				tabIcon: 'general',
+			},
+			headers: {
+				'Options': {
+					myInfo: {
+						type: 'INFO',
+						name: 'This mod adds camera smoothing and other tweaks to attempt to fix the stutter when moving diagonally.\nIMPORTANT: Please use the biggest Pixel Size in Video settings for the best effect.',
+					},
+					myInfo2: {
+						type: 'INFO',
+						name: 'Please restart the game to apply the settings.',
+					},
+					useCameraSmoothing: {
+						type: 'CHECKBOX',
+						init: true,
+						name: 'Camera smoothing',
+						description: "Enables camera smoothing (recommended).",
+					},
+					useCameraRoundingFix: {
+						type: 'CHECKBOX',
+						init: false,
+						name: 'Camera rounding fix',
+						description: "Fixes how camera position is rounded compared to player position.",
+					},
+					useBetterTimerPrecision: {
+						type: 'CHECKBOX',
+						init: false,
+						name: 'Better timer precision',
+						description: "Uses performance.now() instead of Date.now() for better precision.",
+					},
+					cameraSmoothingFactor: {
+						type: 'OBJECT_SLIDER',
+						init: 70,
+						min: 10,
+						max: 85,
+						step: 15,
+						fill: true,
+						showPercentage: false,
+						name: 'Camera smoothing factor',
+						description: "Defines how much the camera is smoothed.",
+					},
+					cameraSmoothingThreshold: {
+						type: 'OBJECT_SLIDER',
+						init: 50,
+						min: 0,
+						max: 100,
+						step: 1,
+						fill: true,
+						showPercentage: false,
+						name: 'Camera smoothing threshold',
+						description: "Defines the max movement length where smoothing can still be applied.",
+					},
+					useRoundedPhysics: {
+						type: 'CHECKBOX',
+						init: false,
+						name: 'Use rounded physics /!\\',
+						description: "This WILL break a lot of stuff and decrease overall movement speed.",
+					},
+				},
+			},
+		},
+	}
+)
+
 ig.module('cc-staircase-effect-fix')
 	.requires(
 		'impact.feature.camera.camera',
@@ -7,10 +80,11 @@ ig.module('cc-staircase-effect-fix')
 	.defines(() => {
 		ig.Camera.inject(
 		{
-			_cameraSmoothingFactor: 0.15,
-
 			_getNewPos: function(a, b, c)
 			{
+				if (!Opts.useCameraSmoothing)
+					return this.parent(a, b, c);
+
 				let olda = Vec2.create();
 				Vec2.assign(olda, a);
 
@@ -45,9 +119,9 @@ ig.module('cc-staircase-effect-fix')
 				var dx = a.x - olda.x;
 				var dy = a.y - olda.y;
 
-				let smoothingFactor = this._cameraSmoothingFactor;
+				let smoothingFactor = 1.0 - Opts.cameraSmoothingFactor / 100.0;
 
-				if (Math.sqrt(dx * dx + dy * dy) > 50)
+				if (Math.sqrt(dx * dx + dy * dy) > Opts.cameraSmoothingThreshold)
 					smoothingFactor = 1.0;
 
 				a.x = olda.x + dx * smoothingFactor;
@@ -60,7 +134,6 @@ ig.module('cc-staircase-effect-fix')
 		ig.Camera.EntityTarget.inject(
 		{
 			_lastEntityPos: Vec2.create(),
-			_cameraSmoothingFactor: 0.15,
 
 			init(a, b)
 			{
@@ -71,6 +144,9 @@ ig.module('cc-staircase-effect-fix')
 
 			getPos(a)
 			{
+				if (!Opts.useCameraRoundingFix)
+					return this.parent(a)
+
 				let olda = Vec2.create();
 				Vec2.assign(olda, a);
 				this.parent(a)
@@ -105,8 +181,13 @@ ig.module('cc-staircase-effect-fix')
 
 		var cc_t = 0;
 
+		ig.Timer.oldstep = ig.Timer.step;
+
 		ig.Timer.step = function()
 		{
+			if (!Opts.useBetterTimerPrecision)
+				return ig.Timer.oldstep();
+
 			var a = cc_t ? cc_t : (window.performance.now ? window.performance.now() : Date.now());
 			ig.Timer.time = ig.Timer.time + Math.min((a - ig.Timer._last) / 1E3, ig.Timer.maxStep) * ig.Timer.timeScale;
 			ig.Timer._last = a;
@@ -117,6 +198,46 @@ ig.module('cc-staircase-effect-fix')
 			{
 				cc_t = t;
 				this.parent();
+			}
+		});
+
+		ig.Physics.inject({
+			moveEntityXY(a, c, e, f, g)
+			{
+				if (!Opts.useRoundedPhysics)
+					return this.parent(a, c, e, f, g);
+
+				var originalX = c.pos.x;
+				var originalY = c.pos.y;
+				var originalRound = Math.round;
+				Math.round = x => x;
+				var ret = this.parent(a, c, e, f, g);
+				Math.round = originalRound;
+
+				if ((e.x != 0 || e.y != 0) && c === ig.game.playerEntity.coll)
+				{
+					var x = c.pos.x;
+					var y = c.pos.y;
+
+					if (e.x != 0 && Math.abs(e.x) > Math.abs(e.y)) {
+						x = Math.round(c.pos.x);
+						y = Math.round(c.pos.y + (x - c.pos.x) * e.y / e.x);
+					}
+					else if (e.y != 0 && Math.abs(e.y) >= Math.abs(e.x)) {
+						y = Math.round(c.pos.y);
+						x = Math.round(c.pos.x + (y - c.pos.y) * e.x / e.y);
+					}
+
+					if (!g) {
+						c._collData.frameVel.x = x - originalX;
+						c._collData.frameVel.y = y - originalY;
+					}
+
+					c.pos.x = x;
+					c.pos.y = y;
+				}
+
+				return ret;
 			}
 		});
 	});
