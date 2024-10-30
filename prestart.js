@@ -49,6 +49,12 @@ const Opts = modmanager.registerAndGetModOptions(
 						name: 'Camera smoothing threshold',
 						description: "Defines the max movement length where smoothing can still be applied.",
 					},
+					onlySmoothPlayerCamera: {
+						type: 'CHECKBOX',
+						init: true,
+						name: 'Smooth player camera only',
+						description: "Apply the smoothing to all cameras or only to player camera.",
+					},
 					useBetterTimerPrecision: {
 						type: 'CHECKBOX',
 						init: false,
@@ -87,6 +93,9 @@ ig.module('cc-staircase-effect-fix')
 			_getNewPos: function(a, b, c)
 			{
 				if (!Opts.useCameraSmoothing)
+					return this.parent(a, b, c);
+
+				if (Opts.onlySmoothPlayerCamera && !(this.targets.length > 0 && this.targets[this.targets.length - 1].target.entity === ig.game.playerEntity))
 					return this.parent(a, b, c);
 
 				let olda = Vec2.create();
