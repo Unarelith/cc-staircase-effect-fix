@@ -10,32 +10,20 @@ const Opts = modmanager.registerAndGetModOptions(
 				tabIcon: 'general',
 			},
 			headers: {
-				'Options': {
+				'Basic options': {
 					myInfo: {
 						type: 'INFO',
-						name: 'This mod adds camera smoothing and other tweaks to attempt to fix the stutter when moving diagonally.\nIMPORTANT: Please use the biggest Pixel Size in Video settings for the best effect.',
+						name: 'This mod adds camera smoothing and other tweaks to attempt to fix the stutter when moving diagonally.',
 					},
 					myInfo2: {
 						type: 'INFO',
-						name: 'Please restart the game to apply the settings.',
+						name: 'IMPORTANT: Please use the biggest Pixel Size in Video settings for the best effect.',
 					},
 					useCameraSmoothing: {
 						type: 'CHECKBOX',
 						init: true,
 						name: 'Camera smoothing',
 						description: "Enables camera smoothing (recommended).",
-					},
-					useCameraRoundingFix: {
-						type: 'CHECKBOX',
-						init: false,
-						name: 'Camera rounding fix',
-						description: "Fixes how camera position is rounded compared to player position.",
-					},
-					useBetterTimerPrecision: {
-						type: 'CHECKBOX',
-						init: false,
-						name: 'Better timer precision',
-						description: "Uses performance.now() instead of Date.now() for better precision.",
 					},
 					cameraSmoothingFactor: {
 						type: 'OBJECT_SLIDER',
@@ -48,6 +36,8 @@ const Opts = modmanager.registerAndGetModOptions(
 						name: 'Camera smoothing factor',
 						description: "Defines how much the camera is smoothed.",
 					},
+				},
+				'Advanced options': {
 					cameraSmoothingThreshold: {
 						type: 'OBJECT_SLIDER',
 						init: 50,
@@ -58,6 +48,20 @@ const Opts = modmanager.registerAndGetModOptions(
 						showPercentage: false,
 						name: 'Camera smoothing threshold',
 						description: "Defines the max movement length where smoothing can still be applied.",
+					},
+					useBetterTimerPrecision: {
+						type: 'CHECKBOX',
+						init: false,
+						name: 'Better timer precision',
+						description: "Might prevent stutter on some devices.",
+					},
+				},
+				'Deprecated': {
+					useCameraRoundingFix: {
+						type: 'CHECKBOX',
+						init: false,
+						name: 'Camera rounding /!\\',
+						description: "Might be better in some cases, might cause issues in others.",
 					},
 					useRoundedPhysics: {
 						type: 'CHECKBOX',
