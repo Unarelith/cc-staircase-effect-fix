@@ -69,7 +69,7 @@ const Opts = modmanager.registerAndGetModOptions(
 						type: 'CHECKBOX',
 						init: true,
 						name: 'Better timer precision',
-						description: "Might prevent stutter on some devices.",
+						description: "Improve frame timer precision (can prevent stutter).",
 					},
 				},
 				'Deprecated': {
