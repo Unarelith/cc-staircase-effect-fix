@@ -27,14 +27,19 @@ const Opts = modmanager.registerAndGetModOptions(
 					},
 					cameraSmoothingFactor: {
 						type: 'OBJECT_SLIDER',
-						init: 70,
-						min: 10,
-						max: 85,
-						step: 15,
+						init: 0.30,
+						min: 0.15,
+						max: 0.90,
+						step: 0.15,
 						fill: true,
 						showPercentage: false,
 						name: 'Camera smoothing factor',
-						description: "Defines how much the camera is smoothed.",
+						description: "Defines how much the camera is smoothed (lower = more smoothing).",
+						customNumberDisplay(index)
+						{
+							const num = this.min + this.step * index;
+							return num;
+						},
 					},
 				},
 				'Advanced options': {
@@ -132,7 +137,7 @@ ig.module('cc-staircase-effect-fix')
 				var dx = a.x - olda.x;
 				var dy = a.y - olda.y;
 
-				let smoothingFactor = 1.0 - Opts.cameraSmoothingFactor / 100.0;
+				let smoothingFactor = Opts.cameraSmoothingFactor;
 
 				if (Math.sqrt(dx * dx + dy * dy) > Opts.cameraSmoothingThreshold)
 					smoothingFactor = 1.0;
