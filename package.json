@@ -1,7 +1,7 @@
 {
 	"name": "cc-staircase-effect-fix",
 	"ccmodHumanName": "Staircase Effect Fix",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"prestart": "prestart.js",
 	"module": true
 }
