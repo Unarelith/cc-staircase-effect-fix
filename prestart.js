@@ -13,7 +13,7 @@ const Opts = modmanager.registerAndGetModOptions(
 				'Basic options': {
 					myInfo: {
 						type: 'INFO',
-						name: 'This mod adds camera smoothing and other tweaks to attempt to fix the stutter when moving diagonally.',
+						name: 'This mod adds camera smoothing and other tweaks to fix diagonal movement stutter.',
 					},
 					myInfo2: {
 						type: 'INFO',
