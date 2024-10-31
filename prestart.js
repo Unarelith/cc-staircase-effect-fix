@@ -98,6 +98,9 @@ ig.module('cc-staircase-effect-fix')
 		'impact.base.system'
 	)
 	.defines(() => {
+		var cc_t = 0;
+		var cc_o = 0;
+
 		ig.Camera.inject(
 		{
 			_getNewPos: function(a, b, c)
@@ -202,16 +205,23 @@ ig.module('cc-staircase-effect-fix')
 			}
 		});
 
-		var cc_t = 0;
-
 		ig.Timer.oldstep = ig.Timer.step;
 
 		ig.Timer.step = function()
 		{
 			if (!Opts.useBetterTimerPrecision)
+			{
+				cc_o = -1;
 				return ig.Timer.oldstep();
+			}
 
 			var a = cc_t ? cc_t : (window.performance.now ? window.performance.now() : Date.now());
+
+			if (cc_o < 0)
+				cc_o = ig.Timer._last - a;
+
+			a += cc_o;
+
 			ig.Timer.time = ig.Timer.time + Math.min((a - ig.Timer._last) / 1E3, ig.Timer.maxStep) * ig.Timer.timeScale;
 			ig.Timer._last = a;
 		};
