@@ -218,7 +218,7 @@ ig.module('cc-staircase-effect-fix')
 			var a = cc_t ? cc_t : (window.performance.now ? window.performance.now() : Date.now());
 
 			if (cc_o < 0)
-				cc_o = ig.Timer._last - a;
+				cc_o = ig.Timer._last - a + 1;
 
 			a += cc_o;
 
