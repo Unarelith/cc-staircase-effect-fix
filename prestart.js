@@ -53,6 +53,11 @@ const Opts = modmanager.registerAndGetModOptions(
 						showPercentage: false,
 						name: 'Camera smoothing threshold',
 						description: "Defines the max movement length where smoothing can still be applied.",
+						customNumberDisplay(index)
+						{
+							const num = this.min + this.step * index;
+							return num;
+						},
 					},
 					onlySmoothPlayerCamera: {
 						type: 'CHECKBOX',
