@@ -90,6 +90,16 @@ const Opts = modmanager.registerAndGetModOptions(
 		},
 	}
 )
+// Prevent audio going wild when turning on the useBetterTimerPrecision option
+const desc = Opts.flatOpts.useBetterTimerPrecision.description
+sc.CheckboxGui.inject({
+	invokeButtonPress() {
+		if (this.pressed || this.data.description != desc) return this.parent()
+		ig.Sound.enabled = false
+		this.parent()
+		ig.Sound.enabled = true
+	}
+})
 
 ig.module('cc-staircase-effect-fix')
 	.requires(
