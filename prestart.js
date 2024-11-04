@@ -92,9 +92,9 @@ ig.module('cc-staircase-effect-fix')
 		'impact.base.system'
 	)
 	.defines(() => {
-		var cc_t = 0;
-		var cc_o = 0;
-
+		//----------------------------------------------------------------------
+		// Camera smoothing
+		//----------------------------------------------------------------------
 		ig.Camera.inject(
 		{
 			_getNewPos: function(a, b, c)
@@ -125,6 +125,12 @@ ig.module('cc-staircase-effect-fix')
 			}
 		});
 
+		//----------------------------------------------------------------------
+		// Timer precision improvement
+		//----------------------------------------------------------------------
+		var cc_t = 0;
+		var cc_o = 0;
+
 		ig.Timer.oldstep = ig.Timer.step;
 
 		ig.Timer.step = function()
@@ -154,6 +160,9 @@ ig.module('cc-staircase-effect-fix')
 			}
 		});
 
+		//----------------------------------------------------------------------
+		// Physics rounding (deprecated)
+		//----------------------------------------------------------------------
 		ig.Physics.inject({
 			moveEntityXY(a, c, e, f, g)
 			{
