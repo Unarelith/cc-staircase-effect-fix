@@ -2,15 +2,23 @@
 
 This mod aims to fix the staircase effect that can be seen on the background when the player is moving diagonally.
 
-Features:
+[Without](https://www.youtube.com/watch?v=hD7URVK7JxI) - [With](https://www.youtube.com/watch?v=4fN0hv-uQDo)
+(stutter comes from the recording)
+
+## Features
+
 - Camera smoothing (customizable smoothing factor and threshold)
-
-Additional features (disabled by default, for testing purpose only):
-- Camera rounding
 - Timer precision improvement
-- Physics rounding
 
-Comparison: [Without](https://www.youtube.com/watch?v=hD7URVK7JxI) - [With (old)](https://www.youtube.com/watch?v=4fN0hv-uQDo) (please ignore the stutter)
+Recommended smoothing factor:
+- 720p: 0.45
+- 1080p: 0.45 <-> 0.3
+- 1440p: 0.3 <-> 0.15
+- 4k: probably 0.15
+
+**Warning:** With a low factor camera will be smoothed a lot.
+
+I played a lot at 0.45 on my Steam Deck and it was great, but on my 1440p monitor 0.45 wasn't enough.
 
 ## Details
 
