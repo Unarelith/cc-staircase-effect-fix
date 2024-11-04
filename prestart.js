@@ -73,12 +73,6 @@ const Opts = modmanager.registerAndGetModOptions(
 					},
 				},
 				'Deprecated': {
-					useCameraRoundingFix: {
-						type: 'CHECKBOX',
-						init: false,
-						name: 'Camera rounding /!\\',
-						description: "Might be better in some cases, might cause issues in others.",
-					},
 					useRoundedPhysics: {
 						type: 'CHECKBOX',
 						init: false,
@@ -154,54 +148,6 @@ ig.module('cc-staircase-effect-fix')
 				a.y = olda.y + dy * smoothingFactor;
 
 				return a
-			}
-		});
-
-		ig.Camera.EntityTarget.inject(
-		{
-			_lastEntityPos: Vec2.create(),
-
-			init(a, b)
-			{
-				this.parent(a, b);
-
-				Vec2.assign(this._lastEntityPos, this.entity.coll.pos);
-			},
-
-			getPos(a)
-			{
-				if (!Opts.useCameraRoundingFix)
-					return this.parent(a)
-
-				let olda = Vec2.create();
-				Vec2.assign(olda, a);
-				this.parent(a)
-				Vec2.assign(a, olda);
-	
-				var d = Vec2.create();
-				Vec2.assign(d, this.entity.coll.pos);
-				var ex = d.x - this._lastEntityPos.x;
-				var ey = d.y - this._lastEntityPos.y;
-				var x = d.x;
-				var y = d.y;
-
-				// Round entity position properly for diagonal movement
-				if (ex != 0 && Math.abs(ex) > Math.abs(ey)) {
-					x = Math.round(d.x);
-					y = Math.round(d.y + (x - d.x) * ey / ex);
-				}
-				else if (ey != 0 && Math.abs(ey) >= Math.abs(ex)) {
-					y = Math.round(d.y);
-					x = Math.round(d.x + (y - d.y) * ex / ey);
-				}
-
-				y -= this._currentZ;
-
-				this._lastEntityPos.x = x;
-				this._lastEntityPos.y = y;
-
-				a.x = x + this.entity.coll.size.x / 2;
-				a.y = y + this.entity.coll.size.y / 2 - Constants.BALL_HEIGHT;
 			}
 		});
 
