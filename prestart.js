@@ -99,45 +99,19 @@ ig.module('cc-staircase-effect-fix')
 		{
 			_getNewPos: function(a, b, c)
 			{
-				if (!Opts.useCameraSmoothing)
-					return this.parent(a, b, c);
+				let isTargettingPlayer = (this.targets.length > 0 && this.targets[this.targets.length - 1].target.entity === ig.game.playerEntity);
 
-				if (Opts.onlySmoothPlayerCamera && !(this.targets.length > 0 && this.targets[this.targets.length - 1].target.entity === ig.game.playerEntity))
+				if (!Opts.useCameraSmoothing || (Opts.onlySmoothPlayerCamera && !isTargettingPlayer))
 					return this.parent(a, b, c);
 
 				let olda = Vec2.create();
 				Vec2.assign(olda, a);
 
-				var d = false;
-				if (this.targets.length > 0) {
-					d = this.targets[this.targets.length - 1];
-
-					d.target.getPos(a);
-
-					if (c) {
-						c.x = a.x + Math.round(d._currentZoomOffset.x);
-						c.y = a.y + Math.round(d._currentZoomOffset.y)
-					}
-
-					a.x = a.x + Math.round(d._currentOffset.x);
-					a.y = a.y + Math.round(d._currentOffset.y);
-
-					d = d.keepZoomFocusAligned || false
-				}
-				if (b) {
-					b.x = a.x;
-					b.y = a.y
-				}
-				if (this._cameraInBounds) {
-					b = d ? 1 : ig.system.zoom;
-					a.x = a.x.limit(ig.system.width / 2 / b, ig.game.size.x - ig.system.width / 2 / b);
-					a.y = a.y.limit(ig.system.height / 2 / b, ig.game.size.y - ig.system.height / 2 / b)
-				}
-				!d && c && Vec2.assign(c, a);
+				a = this.parent(a, b, c);
 
 				// Smooth camera position
-				var dx = a.x - olda.x;
-				var dy = a.y - olda.y;
+				let dx = a.x - olda.x;
+				let dy = a.y - olda.y;
 
 				let smoothingFactor = Opts.cameraSmoothingFactor;
 
