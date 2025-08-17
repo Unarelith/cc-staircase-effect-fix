@@ -61,7 +61,7 @@ const Opts = modmanager.registerAndGetModOptions(
 					},
 					onlySmoothPlayerCamera: {
 						type: 'CHECKBOX',
-						init: true,
+						init: false,
 						name: 'Smooth player camera only',
 						description: "Apply the smoothing to all cameras or only to player camera.",
 					},
