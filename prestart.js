@@ -67,7 +67,7 @@ const Opts = modmanager.registerAndGetModOptions(
 					},
 					useBetterTimerPrecision: {
 						type: 'CHECKBOX',
-						init: true,
+						init: false,
 						name: 'Better timer precision',
 						description: "Improve frame timer precision (can prevent stutter).",
 					},
