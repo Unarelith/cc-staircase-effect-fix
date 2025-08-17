@@ -1,6 +1,6 @@
 {
 	"id": "cc-staircase-effect-fix",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"title": "Staircase Effect Fix",
 	"description": "Fixes staircase effect when moving diagonally",
 	"repository": "https://github.com/Unarelith/cc-staircase-effect-fix",
