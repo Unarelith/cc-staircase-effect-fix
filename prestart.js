@@ -72,14 +72,6 @@ const Opts = modmanager.registerAndGetModOptions(
 						description: "Improve frame timer precision (can prevent stutter).",
 					},
 				},
-				'Deprecated': {
-					useRoundedPhysics: {
-						type: 'CHECKBOX',
-						init: false,
-						name: 'Use rounded physics /!\\',
-						description: "This WILL break a lot of stuff and decrease overall movement speed.",
-					},
-				},
 			},
 		},
 	}
@@ -208,49 +200,6 @@ ig.module('cc-staircase-effect-fix')
 			{
 				cc_t = t;
 				this.parent();
-			}
-		});
-
-		//----------------------------------------------------------------------
-		// Physics rounding (deprecated)
-		//----------------------------------------------------------------------
-		ig.Physics.inject({
-			moveEntityXY(a, c, e, f, g)
-			{
-				if (!Opts.useRoundedPhysics)
-					return this.parent(a, c, e, f, g);
-
-				var originalX = c.pos.x;
-				var originalY = c.pos.y;
-				var originalRound = Math.round;
-				Math.round = x => x;
-				var ret = this.parent(a, c, e, f, g);
-				Math.round = originalRound;
-
-				if ((e.x != 0 || e.y != 0) && c === ig.game.playerEntity.coll)
-				{
-					var x = c.pos.x;
-					var y = c.pos.y;
-
-					if (e.x != 0 && Math.abs(e.x) > Math.abs(e.y)) {
-						x = Math.round(c.pos.x);
-						y = Math.round(c.pos.y + (x - c.pos.x) * e.y / e.x);
-					}
-					else if (e.y != 0 && Math.abs(e.y) >= Math.abs(e.x)) {
-						y = Math.round(c.pos.y);
-						x = Math.round(c.pos.x + (y - c.pos.y) * e.x / e.y);
-					}
-
-					if (!g) {
-						c._collData.frameVel.x = x - originalX;
-						c._collData.frameVel.y = y - originalY;
-					}
-
-					c.pos.x = x;
-					c.pos.y = y;
-				}
-
-				return ret;
 			}
 		});
 	});
