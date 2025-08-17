@@ -126,6 +126,57 @@ ig.module('cc-staircase-effect-fix')
 		});
 
 		//----------------------------------------------------------------------
+		// Tree shadow sync fix
+		//----------------------------------------------------------------------
+		ig.Light.inject(
+		{
+			init: function()
+			{
+				this.parent();
+
+				const c = ig.system.contextScale;
+				this.lightCanvas.width = ig.system.contextWidth * c + 2;
+				this.lightCanvas.height = ig.system.contextHeight * c + 2;
+
+				this.lightContext = this.lightCanvas.getContext('2d');
+				this.lightContext.imageSmoothingEnabled = false;
+
+				this.lightContext.setTransform(c, 0, 0, c, 0, 0);
+			},
+
+			onMidDraw: function()
+			{
+				if (ig.perf.lighting && sc.options.get("lighting")) {
+					ig.system.context.globalCompositeOperation = "lighter";
+					ig.system.context.globalAlpha = 1;
+					for (var a = 0; a < this.shadowProviders.length; ++a) {
+						var b = this.shadowProviders[a];
+						b.drawGlow && b.drawGlow()
+					}
+					for (a = this.condLightList.length; a--;) this.condLightList[a].drawGlow();
+					if (this.hasShadow) {
+						ig.system.context.globalCompositeOperation = "source-over";
+						ig.system.context.globalAlpha = 1;
+
+						ig.system.context.drawImage(
+							this.lightCanvas,
+							0, 0, this.lightCanvas.width, this.lightCanvas.height,
+							0, 0, ig.system.contextWidth, ig.system.contextHeight
+						);
+
+						ig.system.context.globalCompositeOperation = "lighter";
+					}
+					if (this.lightHandles.length > 0)
+						for (a = this.lightHandles.length; a--;) this.lightHandles[a].glow && this.lightHandles[a].draw(0.2, 1);
+					if (this.screenFlashHandles.length > 0)
+						for (a = this.screenFlashHandles.length; a--;) this.screenFlashHandles[a].draw();
+					ig.system.context.globalCompositeOperation = "source-over";
+					ig.system.context.globalAlpha = 1
+				}
+			}
+		});
+
+		//----------------------------------------------------------------------
 		// Timer precision improvement
 		//----------------------------------------------------------------------
 		var cc_t = 0;
